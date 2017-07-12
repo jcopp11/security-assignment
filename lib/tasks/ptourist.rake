@@ -1,15 +1,20 @@
-namespace :ptourist do
-  MEMBERS=["mike","carol","alice","greg","marsha","peter","jan","bobby","cindy", "sam"]
+namespace :assignment do
+  MEMBERS=["mike","carol","alice","greg","marsha","peter","jan","bobby","cindy", "sam","emmanuel"]
   ADMINS=["mike","carol"]
-  ORIGINATORS=["carol","alice"]
-  BOYS=["greg","peter","bobby"]
+  ORIGINATORS=["carol","alice","emmanuel"]
+  BOYS=["greg","peter","bobby","emmanuel"]
   GIRLS=["marsha","jan","cindy"]
 
+
+
   def user_name first_name
-    last_name = (first_name=="alice") ? "nelson" : "brady"
+    last_name = (first_name=="alice"|| first_name=="emmanuel") ? "nelson" : "brady"
     case first_name
     when "alice"
       last_name = "nelson"
+
+    when "emmanuel"
+      last_name="alcime"  
     when "sam"
       last_name = "franklin"
     else
@@ -17,9 +22,17 @@ namespace :ptourist do
     end
     "#{first_name} #{last_name}".titleize
   end
+
+
   def user_email first_name
-    "#{first_name}@bbunch.org"
+    case first_name
+      when "emmanuel"
+        "#{first_name}alcime54@gmail.com"
+      else	
+      "#{first_name}@bbunch.org"
+    end  	
   end
+
   def get_user first_name
     User.find_by(:email=>user_email(first_name))
   end
@@ -49,43 +62,33 @@ namespace :ptourist do
     @mike_user ||= get_user("mike")
   end
 
-  def create_image organizer, img
-    puts "building image for #{img[:caption]}, by #{organizer.name}"
-    image=Image.create(:creator_id=>organizer.id,:caption=>img[:caption])
-    organizer.add_role(Role::ORGANIZER, image).save
-  end
-  def create_thing thing, organizer, members, images
-    thing=Thing.create!(thing)
-    organizer.add_role(Role::ORGANIZER, thing).save
-    m=members.map { |member|
-      unless (member.id==organizer.id || member.id==mike_user.id)
-        member.add_role(Role::MEMBER, thing).save
-        member
-      end
-    }.select {|r| r}
-    puts "added organizer for #{thing.name}: #{first_names([organizer])}"
-    puts "added members for #{thing.name}: #{first_names(m)}"
-    images.each do |img|
-      puts "building image for #{thing.name}, #{img[:caption]}, by #{organizer.name}"
-      image=Image.create(:creator_id=>organizer.id,:caption=>img[:caption])
-      organizer.add_role(Role::ORGANIZER, image).save
-      ThingImage.new(:thing=>thing, :image=>image, 
-                     :creator_id=>organizer.id)
-                .tap {|ti| ti.priority=img[:priority] if img[:priority]}.save!
-    end
-  end
 
-  desc "reset all data"
+
+ def create_business organizer, biz
+    puts "creating business for #{biz[:name]}, by #{organizer.name}"
+    business=Business.create(:name=>biz[:name], :address=>biz[:address],:creator_id=>organizer.id)
+    organizer.add_role(Role::ORGANIZER, business).save
+ end
+
+ def create_services organizer, srv
+     puts "creating service #{srv[:service_name]}, by #{organizer.name}"
+	   service=Service.create(:business_id=>srv[:business_id], :service_name=>srv[:service_name],:price=>srv[:price],:description=>srv[:description],:admin_notes=>srv[:admin_notes],:creator_id=>srv[:creator_id],:priority=>srv[:priority])
+	   organizer.add_role(Role::ORGANIZER, service).save
+ end
+
+
+ desc "reset all data"
   task reset_all: [:users,:subjects] do
   end
 
-  desc "deletes things, images, and links" 
-  task delete_subjects: :environment do
-    puts "removing #{Thing.count} things and #{ThingImage.count} thing_images"
-    puts "removing #{Image.count} images"
-    DatabaseCleaner[:active_record].clean_with(:truncation, {:except=>%w[users]})
-    DatabaseCleaner[:mongoid].clean_with(:truncation)
+  desc "deletes businesses, services" 
+	  task delete_subjects: :environment do
+	    puts "removing #{Business.count} business "
+	    puts "removing #{Service.count} services"
+	    DatabaseCleaner[:active_record].clean_with(:truncation, {:except=>%w[users]})
+	    DatabaseCleaner[:mongoid].clean_with(:truncation)
   end
+
 
   desc "delete all data"
   task delete_all: [:delete_subjects] do
@@ -108,255 +111,159 @@ namespace :ptourist do
     end
 
     originator_users.each do |user|
-      user.add_role(Role::ORIGINATOR, Thing).save
+      user.add_role(Role::ORIGINATOR, Business).save
     end
 
     puts "users:#{User.pluck(:name)}"
   end
 
-  desc "reset things, images, and links" 
+desc "reset things, images, and links" 
   task subjects: [:users] do
-    puts "creating things, images, and links"
+    puts "creating business, service,"
 
-    thing={:name=>"B&O Railroad Museum",
-    :description=>"Discover your adventure at the B&O Railroad Museum in Baltimore, Maryland. Explore 40 acres of railroad history at the birthplace of American railroading. See, touch, and hear the most important American railroad collection in the world! Seasonal train rides for all ages.",
-    :notes=>"Trains rule, boats and cars drool"}
+    business={
+    :name=>"Abbott-RauT",
+    :address=>"4700 Ritchie Unions"}
     organizer=get_user("alice")
     members=boy_users
-    images=[
-    {:path=>"db/bta/image001_original.jpg",
-     :caption=>"Front of Museum Restored: 1884 B&O Railroad Museum Roundhouse",
-     :lng=>-76.6327453,
-     :lat=>39.2854217,
-     :priority=>0},
-    {:path=>"db/bta/image002_original.jpg",
-     :caption=>"Roundhouse Inside: One-of-a-Kind Railroad Collection inside the B&O Roundhouse",
-     :lng=>-76.6327453,
-     :lat=>39.2854217},
-    {:path=>"db/bta/image003_original.jpg",
-     :caption=>"40 acres of railroad history at the B&O Railroad Museum",
-     :lng=>-76.6327453,
-     :lat=>39.2854217},
-    ]
-    create_thing thing, organizer, members, images
+    create_business organizer, business 
+    service={
+     	:business_id=>1,
+     	:service_name=> "Lightweight Concrete Bench",
+     	:price=>"89.52",
+     	:description=>"Qui est id sunt corporis culpa illum. Doloremque et voluptatem deserunt sed enim quia. Adipisci debitis dolore. Aut unde consequuntur reprehenderit eius. Voluptas deleniti illo.Corporis et porro omnis expedita consequatur quo qui. Voluptates possimus esse similique cumque libero. Fuga et veniam voluptas officiis. Laudantium sit sunt voluptas. Rerum nam totam id eius et qui est.Provident ipsam doloremque et aliquam ipsum quae ut. Quia nulla id illo aut eligendi aut. Rem ut odit est.",
+     	:admin_notes=>"Est aut alias qui aut eum. Optio alias quia quam. Tempore quisquam voluptas. Temporibus quos tempora corporis. Consequatur modi quos dicta qui quia quidem aliquam.Necessitatibus assumenda minus. Enim totam qui accusantium est labore. Veniam minima in. In alias saepe reiciendis est qui accusamus. Odio ut esse in cumque laborum.Officia architecto quis harum doloremque in odit. Voluptas aut et blanditiis. Sequi fuga maxime molestiae minus vero et.",
+        :creator_id=>3,
+	    :priority=>5
+     }
+   create_services organizer, service  
 
-    thing={:name=>"Baltimore Water Taxi",
-    :description=>"The Water Taxi is more than a jaunt across the harbor; it’s a Baltimore institution and a way of life. Every day, thousands of residents and visitors not only rely on us to take them safely to their destinations, they appreciate our knowledge of the area and our courteous service. And every day, hundreds of local businesses rely on us to deliver customers to their locations.  We know the city. We love the city. We keep the city moving. We help keep businesses thriving. And most importantly, we offer the most unique way to see Baltimore and provide an unforgettable experience that keeps our passengers coming back again and again.",
-    :notes=>"No on-duty pirates, please"}
-    organizer=get_user("alice")
+    business={
+     :name=>"Bechtelar-Klocko",
+     :address=>"67786 Tremblay Islands "
+    }
+    organizer=get_user("emmanuel")
     members=boy_users
-    images=[
-    {:path=>"db/bta/DSC_5358.jpg",
-     :caption=>"Boat at Fort McHenry",
-     :lng=>-76.578519,
-     :lat=>39.265882},
-    {:path=>"db/bta/DSC_5393.jpg",
-     :caption=>"Boat heading in to Fell's Point",
-     :lng=>-76.593026,
-     :lat=>39.281676},
-    {:path=>"db/bta/DSC_5441.jpg",
-     :caption=>"Boat at Harborplace",
-     :lng=>-76.611449,
-     :lat=>39.285887,
-     :priority=>0},
-    {:path=>"db/bta/DSC_5469.jpg",
-     :caption=>"Boat passing Pier 5",
-     :lng=>-76.605206,
-     :lat=>39.284038}
-    ]
-    create_thing thing, organizer, members, images
-
-    thing={:name=>"Rent-A-Tour",
-    :description=>"Professional guide services and itinerary planner in Baltimore, Washington DC, Annapolis and the surronding region",
-    :notes=>"Bus is clean and ready to roll"}
+    create_business organizer, business
+    service={
+	      :business_id=> 2,
+	      :service_name=> "Small Rubber Pants",
+	      :price=>"83.53",
+	      :description=>"Soluta vel cupiditate sed ipsa dolor. Non dicta modi vitae debitis. Vel laborum sapiente distinctio debitis.Cupiditate laboriosam dignissimos maiores mollitia consequuntur. Ipsa facilis animi quisquam excepturi. Consequuntur doloremque ad sed rem maxime vel.Rerum iure in voluptatem repudiandae dicta. Ex atque rem est. Ut laboriosam atque rerum impedit dolor. Dolor soluta odit eos. Non quaerat quidem cupiditate saepe.",
+          :admin_notes=>"In minima corporis iure eos amet. Dolor blanditiis repudiandae sapiente tenetur qui non. Omnis qui exercitationem ut. Repellendus eos amet quasi blanditiis aspernatur rem sequi.Sint tempora eaque officia esse minus veniam aut. Maiores eum a tempora natus quos. Iure est debitis sed accusantium dolor dolorem.Molestiae quaerat earum delectus quia veritatis eum omnis. Voluptas sit et corrupti. Quod eos laboriosam. Omnis voluptas vitae reprehenderit quas.",
+	      :creator_id=>10,
+	      :priority=>5
+	    }
+   
+    create_services organizer,service
+    business={
+     :name=>"Becker and Sons",
+     :address=>"199 Kertzmann Inlet"
+    }
     organizer=get_user("greg")
     members=boy_users
-    images=[
-    {:path=>"db/bta/image004_original.jpg",
-     :caption=>"Overview",
-     :lng=>nil,
-     :lat=>nil
-     },
-    {:path=>"db/bta/image005_original.jpg",
-     :caption=>"Roger Taney Statue",
-     :lng=>-76.615686,
-     :lat=>39.297953,
-     :priority=>0
-     }
-    ]
-    create_thing thing, organizer, members, images
-
-    thing={:name=>"Holiday Inn Timonium",
-    :description=>"Group friendly located just a few miles north of Baltimore's Inner Harbor. Great neighborhood in Baltimore County",
-    :notes=>"Early to bed, early to rise"}
+    create_business organizer, business
+    service={
+	      :business_id=> 3,
+	      :service_name=> "Durable Paper Computer",
+	      :price=>"3.62",
+	      :description=>"Ut et et nisi autem quia consequatur. Sint ex voluptas fugit quis corrupti animi distinctio. Dolorum corrupti aspernatur. Unde quasi possimus at nesciunt voluptas dolore. Id officiis dolor aliquid eligendi nam commodi sed.Qui hic maiores molestiae. Vero nostrum repudiandae rerum sit. Et magnam autem nulla. Ut pariatur reprehenderit error modi ducimus vel quisquam.Sit sit consequuntur sint animi. Vel facilis id adipisci amet est. Autem in provident. Fugit accusamus quaerat non.",
+          :admin_notes=>"Qui cum non quo dignissimos dolorum et sed. Cumque et voluptates aperiam voluptatibus dignissimos. Eaque aperiam nisi. Velit unde doloremque voluptas illo.Sint tempora aspernatur et modi sequi dolores quis. Quia optio et omnis qui. Accusamus asperiores sunt dolor. Quos expedita cum neque voluptate fugit.Dolore nisi dolorem. Alias quis at fuga et qui eum quo. Distinctio quis ut ut reiciendis ut. Error voluptas exercitationem animi qui maiores.",
+	      :creator_id=>4,
+	      :priority=>3
+	    }
+  
+   create_services organizer, service
+   business={
+     :name=>"Cronin LLC",
+     :address=>"936 Ola Parks"
+    }
     organizer=get_user("carol")
     members=girl_users
-    images=[
-    {:path=>"db/bta/hitim-001.jpg",
-     :caption=>"Hotel Front Entrance",
-     :lng=>-76.64285450000001, 
-     :lat=>39.454538,
-     :priority=>0
-     }
-    ]
-    create_thing thing, organizer, members, images
-
-    thing={:name=>"National Aquarium",
-    :description=>"Since first opening in 1981, the National Aquarium has become a world-class attraction in the heart of Baltimore. Recently celebrating our 35th Anniversary, we continue to be a symbol of urban renewal and a source of pride for Marylanders. With a mission to inspire the world’s aquatic treasures, the Aquarium is consistently ranked as one of the nation’s top aquariums and has hosted over 51 million guests since opening. A study by the Maryland Department of Economic and Employment Development determined that the Aquarium annually generates nearly $220 million in revenues, 2,000 jobs, and $6.8 million in State and local taxes. It was also recently named one of Baltimore’s Best Places to Work! In addition to housing nearly 20,000 animals, we have countless science-based education programs and hands-on conservation projects spanning from right here in the Chesapeake Bay to abroad in Costa Rica. Once you head inside, The National Aquarium has the ability to transport you all over the world in a matter of hours to discover hundreds of incredible species. From the Freshwater Crocodile in our Australia: Wild Extremes exhibit all the way to a Largetooth Sawfish in the depths of Shark Alley. Recently winning top honors from the Association of Zoos and Aquariums for outstanding design, exhibit innovation and guest engagement, we can’t forget about Living Seashore; an exhibit where guests can touch Atlantic stingrays, Horseshoe crabs, and even Moon jellies if they wish! It is a place for friends, family, and people from all walks of life to come and learn about the extraordinary creatures we share our planet with. Through education, research, conservation action and advocacy, the National Aquarium is truly pursuing a vision to change the way humanity cares for our ocean planet.",
-    :notes=>"Remember to water the fish"}
-    organizer=get_user("carol")
+    create_business organizer, business
+    service={
+	      :business_id=> 3,
+	      :service_name=> "Lightweight Aluminum Coat",
+	      :price=>"20.83",
+	      :description=>"Nesciunt inventore necessitatibus illo aspernatur. Magni perferendis eius quis. Quam aut in quas rem beatae. Maxime aut nobis culpa.Vero non doloribus molestiae debitis porro. Alias error voluptatum. Eum tempora ipsa. Provident iste vitae hic nemo.Natus vitae nihil. Et officiis dolores. Ut temporibus ab et aperiam dolores ullam. Praesentium sunt in et qui non velit. Rerum est ut occaecati eligendi eos.",
+          :admin_notes=>"Voluptatem eligendi sed mollitia sunt nihil impedit et. Eum asperiores ut modi laboriosam minus et ut. Reprehenderit voluptatem laboriosam voluptas impedit necessitatibus cupiditate et. Doloribus ea ut eos.Similique odit vel magni non. Voluptates impedit accusamus sequi aut pariatur. Consequatur fuga omnis ex. Voluptatem totam quia porro ut. Veritatis aut doloribus quisquam necessitatibus.Nemo et ut illo voluptas. Itaque incidunt aut. Voluptatibus ut voluptatem earum quia nisi distinctio.",
+	      :creator_id=>2,
+	      :priority=>4
+	    }
+   
+   create_services organizer, service
+   business={
+     :name=>"Crooks Inc",
+     :address=>"25531 Maud Ferry"
+    }
+    organizer=get_user("emmanuel")
     members=girl_users
-    images=[
-    {:path=>"db/bta/naqua-001.jpg",
-     :caption=>"National Aquarium buildings",
-     :lng=>-76.6083, 
-     :lat=>39.2851,
-     :priority=>0
-     },
-    {:path=>"db/bta/naqua-002.jpg",
-     :caption=>"Blue Blubber Jellies",
-     :lng=>-76.6083, 
-     :lat=>39.2851,
-     },
-    {:path=>"db/bta/naqua-003.jpg",
-     :caption=>"Linne's two-toed sloths",
-     :lng=>-76.6083, 
-     :lat=>39.2851,
-     },
-    {:path=>"db/bta/naqua-004.jpg",
-     :caption=>"Hosting millions of students and teachers",
-     :lng=>-76.6083, 
-     :lat=>39.2851,
-     }
-    ]
-    create_thing thing, organizer, members, images
-
-    thing={:name=>"Hyatt Place Baltimore",
-    :description=>"The New Hyatt Place Baltimore/Inner Harbor, located near Fells Point, offers a refreshing blend of style and innovation in a neighborhood alive with cultural attractions, shopping and amazing local restaurants. 
-
-Whether you’re hungry, thirsty or bored, Hyatt Place Baltimore/Inner Harbor has something to satisfy your needs. Start your day with our free a.m. Kitchen Skillet™, featuring hot breakfast sandwiches, breads, cereals and more. Visit our 24/7 Gallery Market for freshly packaged grab n’ go items, order a hot, made-to-order appetizer or sandwich from our 24/7 Gallery Menu or enjoy a refreshing beverage from our Coffee to Cocktails Bar.
- 
-Work up a sweat in our 24-hour StayFit Gym, which features Life Fitness® cardio equipment and free weights. Then, float and splash around in our indoor pool, open year-round for your relaxation. There’s plenty of other spaces throughout our Inner Harbor hotel for you to chill and socialize with other guests. For your comfort and convenience, all Hyatt Place hotels are smoke-free.
-"}
-    organizer=get_user("marsha")
-    members=girl_users
-    images=[
-    {:path=>"db/bta/hpm-001.jpg",
-     :caption=>"Hotel Front Entrance",
-     :lng=>-76.5987, 
-     :lat=>39.2847,
-     :priority=>0
-     },
-    {:path=>"db/bta/hpm-002.jpg",
-     :caption=>"Terrace",
-     :lng=>-76.5987, 
-     :lat=>39.2847,
-     :priority=>1
-     },
-    {:path=>"db/bta/hpm-003.jpg",
-     :caption=>"Cozy Corner",
-     :lng=>-76.5987, 
-     :lat=>39.2847
-     },
-    {:path=>"db/bta/hpm-004.jpg",
-     :caption=>"Fitness Center",
-     :lng=>-76.5987, 
-     :lat=>39.2847
-     },
-    {:path=>"db/bta/hpm-005.jpg",
-     :caption=>"Gallery Area",
-     :lng=>-76.5987, 
-     :lat=>39.2847
-     },
-    {:path=>"db/bta/hpm-006.jpg",
-     :caption=>"Harbor Room",
-     :lng=>-76.5987, 
-     :lat=>39.2847
-     },
-    {:path=>"db/bta/hpm-007.jpg",
-     :caption=>"Indoor Pool",
-     :lng=>-76.5987, 
-     :lat=>39.2847
-     },
-    {:path=>"db/bta/hpm-008.jpg",
-     :caption=>"Lobby",
-     :lng=>-76.5987, 
-     :lat=>39.2847
-     },
-    {:path=>"db/bta/hpm-009.jpg",
-     :caption=>"Specialty King",
-     :lng=>-76.5987, 
-     :lat=>39.2847
-     }
-    ]
-    create_thing thing, organizer, members, images
-
-    organizer=get_user("peter")
-    image= {:path=>"db/bta/aquarium.jpg",
-     :caption=>"Aquarium",
-     :lng=>-76.6083, 
-     :lat=>39.2851
-     }
-    create_image organizer, image
-
+    create_business organizer, business
+    service={
+	      :business_id=> 4,
+	      :service_name=> "Awesome Leather Knife",
+	      :price=>"64.95",
+	      :description=>"Odit consequatur voluptas. Voluptatem aut qui. Distinctio expedita blanditiis. Ullam dignissimos atque culpa sed qui.Facere quia est sit. Eligendi dolores tempora ipsa. Quia eos ut. Error voluptatem sit.Sunt quam eligendi doloremque sed commodi sunt. Molestiae qui aspernatur. Omnis qui nobis laudantium et. Deleniti eum libero dolor.",
+          :admin_notes=>"Inventore enim officiis et expedita sequi. Ab est autem dolor voluptatem et voluptates iste. Deleniti cupiditate labore aut tempora sit soluta.Consectetur aut rerum. Perferendis consequuntur adipisci nihil. Repudiandae dignissimos eveniet omnis quas accusamus veritatis ipsum.Voluptatem ipsum nihil et maxime voluptate deserunt. Aspernatur tempore sunt qui natus voluptatem. Esse nostrum laborum impedit minus qui quia. Et dolores ratione corporis. Et laborum aliquam.",
+	      :creator_id=>10,
+	      :priority=>5
+	    }
+   
+   create_services organizer, service
+   business={
+     :name=>"Greenfelder, Halvorson and Lockman",
+     :address=>"99122 Corkery Mews"
+    }
     organizer=get_user("jan")
-    image= {:path=>"db/bta/bromo_tower.jpg",
-     :caption=>"Bromo Tower",
-     :lng=>-76.6228645, 
-     :lat=>39.2876736
-     }
-    create_image organizer, image
+    members=girl_users 
+    create_business organizer, business
+    service={
+	      :business_id=> 5,
+	      :service_name=> "Enormous Paper Watch",
+	      :price=>"65.69",
+	      :description=>"Recusandae odit laborum officia nesciunt unde neque. Laboriosam ex quia quis nihil voluptatem hic. Explicabo sed totam ut quas libero aut. Atque et quisquam. Similique culpa iste.Cum id quasi necessitatibus ab a magnam dolor. Sit suscipit libero fugiat magni aut. Ut impedit aut. Aliquid culpa aut exercitationem distinctio.Exercitationem voluptates vitae dignissimos omnis ut similique tempore. Reprehenderit sed sed laboriosam non. Est perferendis fugit qui consequatur modi quod. Voluptatem eum reprehenderit eius aliquam quis iure. Voluptas velit nulla quibusdam expedita a.",
+          :admin_notes=>"Facilis at id quia. Ipsa quo eos sit omnis tenetur quis. Quasi sunt dolores illo qui dignissimos impedit debitis. Sed aliquid excepturi corrupti.Nostrum exercitationem nam quod vero quos. Veritatis ipsum sed nobis molestiae. Atque est iure sed cupiditate voluptatum alias. Ipsa blanditiis et laborum doloremque. Dolor quasi eum.Modi nisi rerum voluptas. Reiciendis laborum ab ducimus ratione fuga iste et. Et molestias odit doloremque. Quidem autem dolore ut et expedita est.",
+	      :creator_id=>10,
+	      :priority=>5
+	    }
+   
+   create_services organizer, service
 
-    organizer=get_user("bobby")
-    image= {:path=>"db/bta/federal_hill.jpg",
-     :caption=>"Federal Hill",
-     :lng=>-76.6152507,
-     :lat=>39.2780092
-     }
-    create_image organizer, image
-
+   business={
+     :name=>"Hand, Nolan and Harris",
+     :address=>"98574 Kovacek Gateway"
+    }
     organizer=get_user("alice")
-    image= {:path=>"db/bta/row_homes.jpg",
-     :caption=>"Row Homes",
-     :lng=>-76.6152153,
-     :lat=>39.3149715
-     }
-    create_image organizer, image
+    members=girl_users
+    create_business organizer, business
+    service={
+	      :business_id=> 6,
+	      :service_name=> "Heavy Duty Aluminum Gloves",
+	      :price=>"31.91",
+	      :description=>"Ea sint et. Illum omnis quam praesentium iste laboriosam dicta quia. Quae rerum expedita sint eaque rerum dicta facere. Totam architecto assumenda facere quia expedita ipsa officia.Asperiores tempore nisi nihil dolorem quas. Ut laudantium explicabo quidem veritatis perferendis. Temporibus optio dolorum deserunt qui.Asperiores alias et. Dolores quam dolor tenetur vel ducimus. Voluptates fuga provident est doloremque et placeat. Veniam cumque et optio facilis. Voluptatum cumque enim qui id repellendus ullam ab.",
+          :admin_notes=>"Reprehenderit beatae ea eligendi dolore et quia. Doloribus non et. Iste aspernatur laudantium voluptatibus. Temporibus labore ut esse exercitationem saepe voluptatibus.Ipsam laborum nesciunt voluptas maxime a. Alias incidunt eum in necessitatibus itaque. Est nisi exercitationem deleniti.Voluptatem esse et est. Nostrum qui architecto atque sapiente consequuntur. Aut eaque et doloribus magnam cum. Distinctio minima et a nobis. Ut ad omnis rerum nemo ratione.",
+	      :creator_id=>10,
+	      :priority=>5
+	    }
+      service={
+        :business_id=> 6,
+        :service_name=> "Fried Wings",
+        :price=>"11.91",
+        :description=>"Ea sint et. Illum omnis quam praesentium iste laboriosam dicta quia. Quae rerum expedita sint eaque rerum dicta facere. Totam architecto assumenda facere quia expedita ipsa officia.Asperiores tempore nisi nihil dolorem quas. Ut laudantium explicabo quidem veritatis perferendis. Temporibus optio dolorum deserunt qui.Asperiores alias et. Dolores quam dolor tenetur vel ducimus. Voluptates fuga provident est doloremque et placeat. Veniam cumque et optio facilis. Voluptatum cumque enim qui id repellendus ullam ab.",
+          :admin_notes=>"Reprehenderit beatae ea eligendi dolore et quia. Doloribus non et. Iste aspernatur laudantium voluptatibus. Temporibus labore ut esse exercitationem saepe voluptatibus.Ipsam laborum nesciunt voluptas maxime a. Alias incidunt eum in necessitatibus itaque. Est nisi exercitationem deleniti.Voluptatem esse et est. Nostrum qui architecto atque sapiente consequuntur. Aut eaque et doloribus magnam cum. Distinctio minima et a nobis. Ut ad omnis rerum nemo ratione.",
+        :creator_id=>10,
+        :priority=>5
+      }
+   
+   create_services organizer, service
 
-    organizer=get_user("alice")
-    image= {:path=>"db/bta/skyline_water_level.jpg",
-     :caption=>"Skyline Water Level",
-     :lng=>-76.6284366, 
-     :lat=>39.2780493
-     }
-    create_image organizer, image
-
-    organizer=get_user("bobby")
-    image= {:path=>"db/bta/skyline.jpg",
-     :caption=>"Skyline",
-     :lng=>-76.6138132,
-     :lat=>39.2801504
-     }
-    create_image organizer, image
-
-    organizer=get_user("marsha")
-    image= {:path=>"db/bta/visitor_center.jpg",
-     :caption=>"Visitor Center",
-     :lng=>-76.6155792, 
-     :lat=>39.28565
-     }
-    create_image organizer, image
-
-    organizer=get_user("greg")
-    image= {:path=>"db/bta/world_trade_center.jpg",
-     :caption=>"World Trade Center",
-     :lng=>-76.6117195,
-     :lat=>39.2858057
-     }
-    create_image organizer, image
-
-    puts "#{Thing.count} things created and #{ThingImage.count("distinct thing_id")} with images"
-    puts "#{Image.count} images created and #{ThingImage.count("distinct image_id")} for things"
+    puts "#{Business.count} business created"
+    puts "#{Service.count} service created"
   end
-
 end
+
+=begin
+(1..20).each {|biz|
+   Business.create!(:name=> Faker::Company.name, :address=> Faker::Address.street_address)
+ }
+=end 
