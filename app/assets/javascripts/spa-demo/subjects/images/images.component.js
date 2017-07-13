@@ -54,13 +54,14 @@
 
   ImageEditorController.$inject = ["$scope","$q",
                                    "$state", "$stateParams",
-                                   "spa-demo.authz.Authz",                                   
+                                   "spa-demo.authz.Authz",
+                                   "spa-demo.layout.DataUtils",
                                    "spa-demo.subjects.Image",
                                    "spa-demo.subjects.ImageThing",
                                    "spa-demo.subjects.ImageLinkableThing",
                                    ];
   function ImageEditorController($scope, $q, $state, $stateParams, 
-                                 Authz, Image, ImageThing,ImageLinkableThing) {
+                                 Authz, DataUtils, Image, ImageThing,ImageLinkableThing) {
     var vm=this;
     vm.selected_linkables=[];
     vm.create = create;
@@ -68,6 +69,7 @@
     vm.update  = update;
     vm.remove  = remove;
     vm.linkThings = linkThings;
+    vm.setImageContent = setImageContent;
 
     vm.$onInit = function() {
       console.log("ImageEditorController",$scope);
@@ -85,6 +87,7 @@
     function newResource() {
       console.log("newResource()");
       vm.item = new Image();
+      console.log(vm.imagesAuthz);
       vm.imagesAuthz.newItem(vm.item);
       return vm.item;
     }
@@ -93,6 +96,7 @@
       var itemId = imageId ? imageId : vm.item.id;
       console.log("re/loading image", itemId);
       vm.item = Image.get({id:itemId});
+      console.log(vm.item);
       vm.things = ImageThing.query({image_id:itemId});
       vm.linkable_things = ImageLinkableThing.query({image_id:itemId});
       vm.imagesAuthz.newItem(vm.item);
@@ -101,9 +105,17 @@
     }
 
     function clear() {
-      newResource();
-      $state.go(".", {id:null});
+      if (!vm.item.id) {
+        $state.reload();
+      } else {
+        $state.go(".", {id:null});
+      }
     }
+
+    function setImageContent(dataUri) {
+      console.log("setImageContent", dataUri ? dataUri.length : null);      
+      vm.item.image_content = DataUtils.getContentFromDataUri(dataUri);
+    }    
 
     function create() {
       vm.item.$save().then(
