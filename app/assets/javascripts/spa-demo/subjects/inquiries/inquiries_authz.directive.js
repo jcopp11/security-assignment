@@ -3,14 +3,14 @@
 
   angular
     .module("spa-demo.subjects")
-    .directive("sdBusinessesAuthz", BusinessesAuthzDirective);
+    .directive("sdInquiriesAuthz", InquiriesAuthzDirective);
 
- BusinessesAuthzDirective.$inject = [];
+  InquiriesAuthzDirective.$inject = [];
 
-  function BusinessesAuthzDirective() {
+  function InquiriesAuthzDirective() {
     var directive = {
         bindToController: true,
-        controller: BusinessesAuthzController,
+        controller: InquiriesAuthzController,
         controllerAs: "vm",
         restrict: "A",
         link: link
@@ -18,13 +18,14 @@
     return directive;
 
     function link(scope, element, attrs) {
-      console.log("BusinessesAuthzDirective", scope);
+      console.log("InquiriesAuthzDirective", scope);
     }
   }
 
-  BusinessesAuthzController.$inject = ["$scope",
-                                       "spa-demo.subjects.BusinessesAuthz"];
-  function BusinessesAuthzController($scope, BusinessesAuthz) {
+  InquiriesAuthzController.$inject = ["$scope",
+                                   "spa-demo.subjects.InquiriesAuthz"];
+  function InquiriesAuthzController($scope, InquiriesAuthz) {
+    console.log("InquiriesAuthzController");
     var vm = this;
     vm.authz={};
     vm.authz.canUpdateItem = canUpdateItem;
@@ -38,18 +39,16 @@
     }
 
     function newItem(item) {
-     BusinessesAuthz.getAuthorizedUser().then(
+      InquiriesAuthz.getAuthorizedUser().then(
         function(user){ authzUserItem(item, user); },
         function(user){ authzUserItem(item, user); });
     }
 
     function authzUserItem(item, user) {
       console.log("new Item/Authz", item, user);
-      console.log(item);
 
-      vm.authz.authenticated = BusinessesAuthz.isAuthenticated();
-      vm.authz.canQuery      = BusinessesAuthz.canQuery();
-      vm.authz.canCreate = BusinessesAuthz.canCreate();
+      vm.authz.authenticated = InquiriesAuthz.isAuthenticated();
+      vm.authz.canQuery      = InquiriesAuthz.canQueryInquiry();
       if (item && item.$promise) {
         vm.authz.canUpdate     = false;
         vm.authz.canDelete     = false;
@@ -61,14 +60,15 @@
     }
 
     function checkAccess(item) {
-      vm.authz.canUpdate     = BusinessesAuthz.canUpdate(item);
-      vm.authz.canDelete     = BusinessesAuthz.canDelete(item);
-      vm.authz.canGetDetails = BusinessesAuthz.canGetDetails(item);
+      vm.authz.canUpdate     = InquiriesAuthz.canUpdate(item);
+      vm.authz.canDelete     = InquiriesAuthz.canRemoveInquiry(item);
+      vm.authz.canGetDetails = InquiriesAuthz.canGetDetails(item);
       console.log("checkAccess", item, vm.authz);
-    }    
+    }
 
     function canUpdateItem(item) {
-      return BusinessesAuthz.canUpdate(item);
-    }    
+    //  return InquiriesAuthz.canUpdateInquiry(item);
+        return true;
+    }
   }
 })();
