@@ -42,6 +42,11 @@
 //= require spa-demo/subjects/images/images_authz.directive
 //= require spa-demo/subjects/things/things.service
 //= require spa-demo/subjects/things/thing_images.service
+//= require spa-demo/subjects/things/thing_inquiry.service
 //= require spa-demo/subjects/things/things_authz.service
 //= require spa-demo/subjects/things/things_authz.directive
 //= require spa-demo/subjects/things/things.component
+//= require spa-demo/subjects/inquiries/inquiries_authz.service
+//= require spa-demo/subjects/inquiries/inquiries_authz.directive
+//= require spa-demo/subjects/inquiries/inquiry.service
+//= require spa-demo/subjects/inquiries/inquiries.component
