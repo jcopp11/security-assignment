@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :inquiry do
-    question "MyText"
+    creator_id 1
     thing nil
   end
 end

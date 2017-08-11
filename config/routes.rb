@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :inquiries, except: [:new, :edit]
   get 'thing_inquiries/index'
 
   get 'authn/whoami', defaults: {format: :json}
