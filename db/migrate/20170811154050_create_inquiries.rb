@@ -1,7 +1,7 @@
 class CreateInquiries < ActiveRecord::Migration
   def change
     create_table :inquiries do |t|
-      t.text :question
+      t.integer :creator_id
       t.belongs_to :thing, index: true, foreign_key: true
 
       t.timestamps null: false
