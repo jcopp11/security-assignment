@@ -154,7 +154,7 @@ namespace :ptourist do
     :lat=>39.2854217},
     ]
     puts organizer.name
-    inquiry=[{:question=>"Question 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eu erat mattis, mattis nisl placerat, vulputate massa. Phasellus placerat orci id arcu ornare venenatis finibus efficitur elit. Fusce suscipit sit amet magna ut efficitur. Fusce sed eros pharetra, consequat risus eu, fringilla ligula. Praesent sollicitudin a sem sit amet auctor. Fusce ex risus, blandit vestibulum efficitur sodales, gravida et nisi. Etiam tempor massa eu elit rhoncus, vel blandit urna varius. In porttitor, sapien non cursus egestas, nunc metus vestibulum est, id sollicitudin ipsum mauris eu massa. Quisque quis venenatis ipsum, ac finibus est. Vivamus venenatis volutpat feugiat. Sed at purus in dui placerat ultrices. Cras eu diam erat. Curabitur gravida auctor enim, quis ornare augue. Etiam vel posuere elit, vehicula pretium velit.", :creator_id=>organizer.id, :thing_id=>""}]
+    inquiry=[{:question=>"Question 1 What is that", :creator_id=>organizer.id, :thing_id=>""}]
     create_thing thing, organizer, members, images, inquiry
 
     thing={:name=>"Baltimore Water Taxi",
@@ -181,8 +181,8 @@ namespace :ptourist do
     :lng=>-76.605206,
     :lat=>39.284038}
     ]
-    inquiry=[{:question=>"Question 2 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eu erat mattis, mattis nisl placerat, vulputate massa. Phasellus placerat orci id arcu ornare venenatis finibus efficitur elit. Fusce suscipit sit amet magna ut efficitur. Fusce sed eros pharetra, consequat risus eu, fringilla ligula. Praesent sollicitudin a sem sit amet auctor. Fusce ex risus, blandit vestibulum efficitur sodales, gravida et nisi. Etiam tempor massa eu elit rhoncus, vel blandit urna varius. In porttitor, sapien non cursus egestas, nunc metus vestibulum est, id sollicitudin ipsum mauris eu massa. Quisque quis venenatis ipsum, ac finibus est. Vivamus venenatis volutpat feugiat. Sed at purus in dui placerat ultrices. Cras eu diam erat. Curabitur gravida auctor enim, quis ornare augue. Etiam vel posuere elit, vehicula pretium velit.", :creator_id=>organizer.id, :thing_id=>""},
-    {:question=>"Question 2B Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eu erat mattis, mattis nisl placerat, vulputate massa. Phasellus placerat orci id arcu ornare venenatis finibus efficitur elit. Fusce suscipit sit amet magna ut efficitur. Fusce sed eros pharetra, consequat risus eu, fringilla ligula. Praesent sollicitudin a sem sit amet auctor. Fusce ex risus, blandit vestibulum efficitur sodales, gravida et nisi. Etiam tempor massa eu elit rhoncus, vel blandit urna varius. In porttitor, sapien non cursus egestas, nunc metus vestibulum est, id sollicitudin ipsum mauris eu massa. Quisque quis venenatis ipsum, ac finibus est. Vivamus venenatis volutpat feugiat. Sed at purus in dui placerat ultrices. Cras eu diam erat. Curabitur gravida auctor enim, quis ornare augue. Etiam vel posuere elit, vehicula pretium velit.", :creator_id=>organizer.id, :thing_id=>""}]
+    inquiry=[{:question=>"Question 2 Who is that", :creator_id=>organizer.id, :thing_id=>""},
+    {:question=>"Question 2B What is this", :creator_id=>organizer.id, :thing_id=>""}]
     create_thing thing, organizer, members, images, inquiry
 
     thing={:name=>"Rent-A-Tour",
@@ -219,7 +219,7 @@ namespace :ptourist do
     :priority=>0
     }
     ]
-    inquiry=[{:question=>"Question 3 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eu erat mattis, mattis nisl placerat, vulputate massa. Phasellus placerat orci id arcu ornare venenatis finibus efficitur elit. Fusce suscipit sit amet magna ut efficitur. Fusce sed eros pharetra, consequat risus eu, fringilla ligula. Praesent sollicitudin a sem sit amet auctor. Fusce ex risus, blandit vestibulum efficitur sodales, gravida et nisi. Etiam tempor massa eu elit rhoncus, vel blandit urna varius. In porttitor, sapien non cursus egestas, nunc metus vestibulum est, id sollicitudin ipsum mauris eu massa. Quisque quis venenatis ipsum, ac finibus est. Vivamus venenatis volutpat feugiat. Sed at purus in dui placerat ultrices. Cras eu diam erat. Curabitur gravida auctor enim, quis ornare augue. Etiam vel posuere elit, vehicula pretium velit.", :creator_id=>organizer.id, :thing_id=>""}]
+    inquiry=[{:question=>"Question 3 What are those", :creator_id=>organizer.id, :thing_id=>""}]
     create_thing thing, organizer, members, images, inquiry
 
     thing={:name=>"National Aquarium",
@@ -250,7 +250,7 @@ namespace :ptourist do
     :lat=>39.2851,
     }
     ]
-    inquiry=[{:question=>"Question 4 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eu erat mattis, mattis nisl placerat, vulputate massa. Phasellus placerat orci id arcu ornare venenatis finibus efficitur elit. Fusce suscipit sit amet magna ut efficitur. Fusce sed eros pharetra, consequat risus eu, fringilla ligula. Praesent sollicitudin a sem sit amet auctor. Fusce ex risus, blandit vestibulum efficitur sodales, gravida et nisi. Etiam tempor massa eu elit rhoncus, vel blandit urna varius. In porttitor, sapien non cursus egestas, nunc metus vestibulum est, id sollicitudin ipsum mauris eu massa. Quisque quis venenatis ipsum, ac finibus est. Vivamus venenatis volutpat feugiat. Sed at purus in dui placerat ultrices. Cras eu diam erat. Curabitur gravida auctor enim, quis ornare augue. Etiam vel posuere elit, vehicula pretium velit.", :creator_id=>organizer.id, :thing_id=>""}]
+    inquiry=[{:question=>"Question 4 How does it work", :creator_id=>organizer.id, :thing_id=>""}]
     create_thing thing, organizer, members, images, inquiry
 
     thing={:name=>"Hyatt Place Baltimore",
@@ -309,7 +309,7 @@ namespace :ptourist do
       :lat=>39.2847
     }
     ]
-    inquiry=[{:question=>"Question 5 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eu erat mattis, mattis nisl placerat, vulputate massa. Phasellus placerat orci id arcu ornare venenatis finibus efficitur elit. Fusce suscipit sit amet magna ut efficitur. Fusce sed eros pharetra, consequat risus eu, fringilla ligula. Praesent sollicitudin a sem sit amet auctor. Fusce ex risus, blandit vestibulum efficitur sodales, gravida et nisi. Etiam tempor massa eu elit rhoncus, vel blandit urna varius. In porttitor, sapien non cursus egestas, nunc metus vestibulum est, id sollicitudin ipsum mauris eu massa. Quisque quis venenatis ipsum, ac finibus est. Vivamus venenatis volutpat feugiat. Sed at purus in dui placerat ultrices. Cras eu diam erat. Curabitur gravida auctor enim, quis ornare augue. Etiam vel posuere elit, vehicula pretium velit.", :creator_id=>organizer.id, :thing_id=>""}]
+    inquiry=[{:question=>"Question 5 Who are they", :creator_id=>organizer.id, :thing_id=>""}]
     create_thing thing, organizer, members, images, inquiry
 
     organizer=get_user("peter")
